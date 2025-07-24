@@ -21,7 +21,7 @@
     input[type="text"] {
       font-size: 1.5em;
       padding: 0.5em;
-      width: 100px;
+      width: 120px;
       text-align: center;
     }
     button {
@@ -35,9 +35,8 @@
 
   <h1>Arabic Number Quiz</h1>
   <div id="arabic-digit">?</div>
-  <input type="text" id="answer" placeholder="Your guess" autocomplete="off" />
+  <input type="text" id="answer" placeholder="Your guess" maxlength="1" autocomplete="off" />
   <div id="feedback"></div>
-  <button onclick="checkAnswer()">Check Answer</button>
   <button onclick="nextQuestion()">Next</button>
 
   <script>
@@ -55,25 +54,33 @@
 
     function nextQuestion() {
       document.getElementById('feedback').textContent = '';
-      document.getElementById('answer').value = '';
+      const input = document.getElementById('answer');
+      input.value = '';
+      input.disabled = false;
+      input.focus();
       currentDigit = getRandomDigit();
       document.getElementById('arabic-digit').textContent = currentDigit;
-      document.getElementById('answer').focus();
     }
 
-    function checkAnswer() {
-      const userInput = document.getElementById('answer').value.trim();
-      const correctAnswer = arabicToEnglish[currentDigit];
-      const feedback = document.getElementById('feedback');
-
-      if (userInput === correctAnswer) {
-        feedback.textContent = "✅ Correct!";
-        feedback.style.color = "green";
-      } else {
-        feedback.textContent = `❌ Incorrect. It was ${correctAnswer}.`;
-        feedback.style.color = "red";
+    function checkAnswerAuto() {
+      const input = document.getElementById('answer');
+      const value = input.value.trim();
+      if (value.length === 1) {
+        input.disabled = true;
+        const correctAnswer = arabicToEnglish[currentDigit];
+        const feedback = document.getElementById('feedback');
+        if (value === correctAnswer) {
+          feedback.textContent = "✅ Correct!";
+          feedback.style.color = "green";
+        } else {
+          feedback.textContent = `❌ Incorrect. It was ${correctAnswer}.`;
+          feedback.style.color = "red";
+        }
       }
     }
+
+    // Event listener for auto-check
+    document.getElementById('answer').addEventListener('input', checkAnswerAuto);
 
     // Start with a question
     window.onload = nextQuestion;
