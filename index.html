@@ -18,6 +18,11 @@
       font-size: 1.2em;
       margin: 1em;
     }
+    #score {
+      font-size: 1em;
+      margin-bottom: 1em;
+      color: #333;
+    }
     input[type="text"] {
       font-size: 1.5em;
       padding: 0.5em;
@@ -34,6 +39,7 @@
 <body>
 
   <h1>Arabic Number Quiz</h1>
+  <div id="score">Score: 0 correct, 0 wrong</div>
   <div id="arabic-digit">?</div>
   <input type="text" id="answer" placeholder="Your guess" maxlength="1" autocomplete="off" />
   <div id="feedback"></div>
@@ -45,11 +51,19 @@
       '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'
     };
     const arabicDigits = Object.keys(arabicToEnglish);
+
     let currentDigit = '';
+    let correctCount = 0;
+    let wrongCount = 0;
+    let answered = false;
 
     function getRandomDigit() {
       const randIndex = Math.floor(Math.random() * arabicDigits.length);
       return arabicDigits[randIndex];
+    }
+
+    function updateScore() {
+      document.getElementById('score').textContent = `Score: ${correctCount} correct, ${wrongCount} wrong`;
     }
 
     function nextQuestion() {
@@ -60,30 +74,36 @@
       input.focus();
       currentDigit = getRandomDigit();
       document.getElementById('arabic-digit').textContent = currentDigit;
+      answered = false;
     }
 
     function checkAnswerAuto() {
       const input = document.getElementById('answer');
       const value = input.value.trim();
-      if (value.length === 1) {
+      if (value.length === 1 && !answered) {
         input.disabled = true;
         const correctAnswer = arabicToEnglish[currentDigit];
         const feedback = document.getElementById('feedback');
         if (value === correctAnswer) {
           feedback.textContent = "✅ Correct!";
           feedback.style.color = "green";
+          correctCount++;
         } else {
           feedback.textContent = `❌ Incorrect. It was ${correctAnswer}.`;
           feedback.style.color = "red";
+          wrongCount++;
         }
+        updateScore();
+        answered = true;
       }
     }
 
-    // Event listener for auto-check
     document.getElementById('answer').addEventListener('input', checkAnswerAuto);
 
-    // Start with a question
-    window.onload = nextQuestion;
+    window.onload = () => {
+      updateScore();
+      nextQuestion();
+    };
   </script>
 
 </body>
